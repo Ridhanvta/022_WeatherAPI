@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather & Geocoding API - Ridha Novita Handayani</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="card">
+        <!-- Bagian Header -->
+        <div class="header">
+            <div class="badge">
+                <span class="dot"></span>
+                <span>PWS Pertemuan 3</span>
+            </div>
+            <h2>Weather & Geocoding API</h2>
+            <p>Ridha Novita Handayani • <span class="nim-badge">20240140022</span></p>
+        </div>
+
+        <!-- Bagian Pencarian -->
+        <div class="search">
+            <input type="text" id="input-lokasi" placeholder="Cari lokasi..." autocomplete="off">
+            <button id="btn-cari">Cari</button>
+        </div>
+
+        <div id="status"></div>
+
+        <!-- Bagian Hasil -->
+        <div id="hasil">
+            <div class="row">
+                <span>🌍 Negara</span>
+                <span id="negara">-</span>
+            </div>
+            <div class="row">
+                <span>🏛️ Provinsi</span>
+                <span id="provinsi">-</span>
+            </div>
+            <div class="row">
+                <span>📍 Kecamatan/Wilayah</span>
+                <span id="kecamatan">-</span>
+            </div>
+            <div class="row">
+                <span>🧭 Longitude</span>
+                <span id="longitude">-</span>
+            </div>
+            <div class="row">
+                <span>🧭 Latitude</span>
+                <span id="latitude">-</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
