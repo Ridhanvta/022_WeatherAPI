@@ -7,7 +7,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
     <style>
         * {
             box-sizing: border-box;
@@ -38,6 +37,7 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
         }
 
+        /* Header */
         .header {
             text-align: center;
             margin-bottom: 22px;
@@ -89,6 +89,7 @@
             font-weight: 600;
         }
 
+        /* Search Section */
         .search {
             display: flex;
             gap: 10px;
@@ -137,6 +138,7 @@
             transform: scale(0.97);
         }
 
+        /* Status Error message */
         #status {
             text-align: center;
             font-size: 0.8rem;
@@ -146,6 +148,7 @@
             display: none;
         }
 
+        /* Hasil Data List */
         #hasil {
             background: rgba(4, 18, 20, 0.4);
             border-radius: 14px;
@@ -182,98 +185,10 @@
         }
     </style>
 </head>
-
-<script>
-    const API_KEY = "TmW3n2IbOKaZxkghOoYB";
-
-    const inputLokasi = document.getElementById("input-lokasi");
-    const btnCari = document.getElementById("btn-cari");
-    const statusBox = document.getElementById("status");
-
-    function showStatus(msg) {
-        if (msg) {
-            statusBox.textContent = msg;
-            statusBox.style.display = "block";
-        } else {
-            statusBox.style.display = "none";
-        }
-    }
-
-    function extractContext(feature) {
-        const context = feature.context || [];
-        let negara = "-";
-        let provinsi = "-";
-        let kecamatan = "-";
-
-        context.forEach(item => {
-            const id = item.id || "";
-            if (id.startsWith("country")) negara = item.text || item.text_id || "-";
-            else if (id.startsWith("region") || id.startsWith("province")) provinsi = item.text || item.text_id || "-";
-            else if (id.startsWith("subdistrict") || id.startsWith("municipality") || id.startsWith("district") || id.startsWith("locality")) {
-                if (kecamatan === "-") kecamatan = item.text || item.text_id || "-";
-            }
-        });
-
-        const placeTypes = feature.place_type || [];
-        if (placeTypes.includes("country") && negara === "-") negara = feature.text;
-        if (placeTypes.includes("region") && provinsi === "-") provinsi = feature.text;
-        if ((placeTypes.includes("municipality") || placeTypes.includes("locality")) && kecamatan === "-") {
-            kecamatan = feature.text;
-        }
-
-        if (kecamatan === "-" && feature.text) {
-            kecamatan = feature.text;
-        }
-
-        return { negara, provinsi, kecamatan };
-    }
-
-    function setHasil(negara, provinsi, kecamatan, lon, lat) {
-        document.getElementById("negara").textContent = negara || "-";
-        document.getElementById("provinsi").textContent = provinsi || "-";
-        document.getElementById("kecamatan").textContent = kecamatan || "-";
-        document.getElementById("longitude").textContent = typeof lon === "number" ? lon.toFixed(6) : (lon || "-");
-        document.getElementById("latitude").textContent = typeof lat === "number" ? lat.toFixed(6) : (lat || "-");
-    }
-
-    async function cari(kotaQuery) {
-        const query = (kotaQuery || inputLokasi.value || "").trim();
-        if (!query) {
-            showStatus("Silakan masukkan nama lokasi terlebih dahulu.");
-            return;
-        }
-
-        showStatus("");
-
-        try {
-            const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(query)}.json?key=${API_KEY}&language=id&limit=1`;
-            const res = await fetch(url);
-            if (!res.ok) throw new Error("Gagal mengambil data dari API MapTiler");
-            const data = await res.json();
-
-            const f = data.features?.[0];
-            if (!f) {
-                showStatus("Lokasi tidak ditemukan.");
-                return;
-            }
-
-            const lon = f.center ? f.center[0] : (f.geometry?.coordinates ? f.geometry.coordinates[0] : 0);
-            const lat = f.center ? f.center[1] : (f.geometry?.coordinates ? f.geometry.coordinates[1] : 0);
-            const ctx = extractContext(f);
-
-            setHasil(ctx.negara, ctx.provinsi, ctx.kecamatan, lon, lat);
-        } catch (err) {
-            console.error(err);
-            showStatus("Gagal mengambil data API.");
-        }
-    
-}
-
-</script>
-
 <body>
 
     <div class="card">
+        <!-- Bagian Header Sesuai Gambar 1 -->
         <div class="header">
             <div class="badge">
                 <span class="dot"></span>
@@ -283,6 +198,7 @@
             <p>Ridha Novita Handayani • <span class="nim-badge">20240140022</span></p>
         </div>
 
+        <!-- Bagian Pencarian Sesuai Gambar 1 -->
         <div class="search">
             <input type="text" id="input-lokasi" placeholder="Cari lokasi..." autocomplete="off">
             <button id="btn-cari">Cari</button>
@@ -290,6 +206,7 @@
 
         <div id="status"></div>
 
+        <!-- Bagian Hasil Sesuai Gambar 2 -->
         <div id="hasil">
             <div class="row">
                 <span>🌍 Negara</span>
@@ -314,5 +231,141 @@
         </div>
     </div>
 
+    <script>
+        const API_KEY = "TmW3n2IbOKaZxkghOoYB";
+
+        const inputLokasi = document.getElementById("input-lokasi");
+        const btnCari = document.getElementById("btn-cari");
+        const statusBox = document.getElementById("status");
+
+        function showStatus(msg) {
+            if (msg) {
+                statusBox.textContent = msg;
+                statusBox.style.display = "block";
+            } else {
+                statusBox.style.display = "none";
+            }
+        }
+
+        function extractContext(feature) {
+            const context = feature.context || [];
+            let negara = "-";
+            let provinsi = "-";
+            let kecamatan = "-";
+
+            context.forEach(item => {
+                const id = item.id || "";
+                if (id.startsWith("country")) negara = item.text || item.text_id || "-";
+                else if (id.startsWith("region") || id.startsWith("province")) provinsi = item.text || item.text_id || "-";
+                else if (id.startsWith("subdistrict") || id.startsWith("municipality") || id.startsWith("district") || id.startsWith("locality")) {
+                    if (kecamatan === "-") kecamatan = item.text || item.text_id || "-";
+                }
+            });
+
+            const placeTypes = feature.place_type || [];
+            if (placeTypes.includes("country") && negara === "-") negara = feature.text;
+            if (placeTypes.includes("region") && provinsi === "-") provinsi = feature.text;
+            if ((placeTypes.includes("municipality") || placeTypes.includes("locality")) && kecamatan === "-") {
+                kecamatan = feature.text;
+            }
+
+            // Jika masih '-', gunakan feature.text sebagai kecamatan/wilayah
+            if (kecamatan === "-" && feature.text) {
+                kecamatan = feature.text;
+            }
+
+            return { negara, provinsi, kecamatan };
+        }
+
+        function setHasil(negara, provinsi, kecamatan, lon, lat) {
+            document.getElementById("negara").textContent = negara || "-";
+            document.getElementById("provinsi").textContent = provinsi || "-";
+            document.getElementById("kecamatan").textContent = kecamatan || "-";
+            document.getElementById("longitude").textContent = typeof lon === "number" ? lon.toFixed(6) : (lon || "-");
+            document.getElementById("latitude").textContent = typeof lat === "number" ? lat.toFixed(6) : (lat || "-");
+        }
+
+        // Pencarian via MapTiler API
+        async function cari(kotaQuery) {
+            const query = (kotaQuery || inputLokasi.value || "").trim();
+            if (!query) {
+                showStatus("Silakan masukkan nama lokasi terlebih dahulu.");
+                return;
+            }
+
+            showStatus("");
+
+            try {
+                const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(query)}.json?key=${API_KEY}&language=id&limit=1`;
+                const res = await fetch(url);
+                if (!res.ok) throw new Error("Gagal mengambil data dari API MapTiler");
+                const data = await res.json();
+
+                const f = data.features?.[0];
+                if (!f) {
+                    showStatus("Lokasi tidak ditemukan.");
+                    return;
+                }
+
+                const lon = f.center ? f.center[0] : (f.geometry?.coordinates ? f.geometry.coordinates[0] : 0);
+                const lat = f.center ? f.center[1] : (f.geometry?.coordinates ? f.geometry.coordinates[1] : 0);
+                const ctx = extractContext(f);
+
+                setHasil(ctx.negara, ctx.provinsi, ctx.kecamatan, lon, lat);
+            } catch (err) {
+                console.error(err);
+                showStatus("Gagal mengambil data API.");
+            }
+        }
+
+        // Load data awal dari Backend Express (/api/lokasi)
+        async function loadBackendAwal() {
+            try {
+                const res = await fetch("/api/lokasi");
+                if (!res.ok) throw new Error("Backend error");
+                const data = await res.json();
+
+                if (data && data.koordinat) {
+                    inputLokasi.value = data.lokasi || "Jakarta";
+                    const lon = data.koordinat[0];
+                    const lat = data.koordinat[1];
+
+                    // Ambil detail wilayah untuk koordinat jakarta dari backend
+                    try {
+                        const revUrl = `https://api.maptiler.com/geocoding/${lon},${lat}.json?key=${API_KEY}&language=id`;
+                        const revRes = await fetch(revUrl);
+                        const revData = await revRes.json();
+                        const f = revData.features?.[0];
+                        if (f) {
+                            const ctx = extractContext(f);
+                            setHasil(ctx.negara !== "-" ? ctx.negara : "Indonesia", ctx.provinsi !== "-" ? ctx.provinsi : "DKI Jakarta", ctx.kecamatan !== "-" ? ctx.kecamatan : "Jakarta Pusat", lon, lat);
+                            return;
+                        }
+                    } catch (e) {
+                        // ignore and use default
+                    }
+
+                    setHasil("Indonesia", "DKI Jakarta", "Jakarta Pusat", lon, lat);
+                } else {
+                    cari("Yogyakarta");
+                }
+            } catch (e) {
+                // Jika backend belum dijalankan atau offline, cari Yogyakarta sebagai default
+                inputLokasi.value = "Yogyakarta";
+                cari("Yogyakarta");
+            }
+        }
+
+        btnCari.addEventListener("click", () => cari());
+        inputLokasi.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                cari();
+            }
+        });
+
+        // Jalankan saat halaman dibuka
+        document.addEventListener("DOMContentLoaded", loadBackendAwal);
+    </script>
 </body>
 </html>
