@@ -235,6 +235,40 @@
         document.getElementById("longitude").textContent = typeof lon === "number" ? lon.toFixed(6) : (lon || "-");
         document.getElementById("latitude").textContent = typeof lat === "number" ? lat.toFixed(6) : (lat || "-");
     }
+
+    async function cari(kotaQuery) {
+        const query = (kotaQuery || inputLokasi.value || "").trim();
+        if (!query) {
+            showStatus("Silakan masukkan nama lokasi terlebih dahulu.");
+            return;
+        }
+
+        showStatus("");
+
+        try {
+            const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(query)}.json?key=${API_KEY}&language=id&limit=1`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error("Gagal mengambil data dari API MapTiler");
+            const data = await res.json();
+
+            const f = data.features?.[0];
+            if (!f) {
+                showStatus("Lokasi tidak ditemukan.");
+                return;
+            }
+
+            const lon = f.center ? f.center[0] : (f.geometry?.coordinates ? f.geometry.coordinates[0] : 0);
+            const lat = f.center ? f.center[1] : (f.geometry?.coordinates ? f.geometry.coordinates[1] : 0);
+            const ctx = extractContext(f);
+
+            setHasil(ctx.negara, ctx.provinsi, ctx.kecamatan, lon, lat);
+        } catch (err) {
+            console.error(err);
+            showStatus("Gagal mengambil data API.");
+        }
+    
+}
+
 </script>
 
 <body>
