@@ -182,6 +182,61 @@
         }
     </style>
 </head>
+
+<script>
+    const API_KEY = "TmW3n2IbOKaZxkghOoYB";
+
+    const inputLokasi = document.getElementById("input-lokasi");
+    const btnCari = document.getElementById("btn-cari");
+    const statusBox = document.getElementById("status");
+
+    function showStatus(msg) {
+        if (msg) {
+            statusBox.textContent = msg;
+            statusBox.style.display = "block";
+        } else {
+            statusBox.style.display = "none";
+        }
+    }
+
+    function extractContext(feature) {
+        const context = feature.context || [];
+        let negara = "-";
+        let provinsi = "-";
+        let kecamatan = "-";
+
+        context.forEach(item => {
+            const id = item.id || "";
+            if (id.startsWith("country")) negara = item.text || item.text_id || "-";
+            else if (id.startsWith("region") || id.startsWith("province")) provinsi = item.text || item.text_id || "-";
+            else if (id.startsWith("subdistrict") || id.startsWith("municipality") || id.startsWith("district") || id.startsWith("locality")) {
+                if (kecamatan === "-") kecamatan = item.text || item.text_id || "-";
+            }
+        });
+
+        const placeTypes = feature.place_type || [];
+        if (placeTypes.includes("country") && negara === "-") negara = feature.text;
+        if (placeTypes.includes("region") && provinsi === "-") provinsi = feature.text;
+        if ((placeTypes.includes("municipality") || placeTypes.includes("locality")) && kecamatan === "-") {
+            kecamatan = feature.text;
+        }
+
+        if (kecamatan === "-" && feature.text) {
+            kecamatan = feature.text;
+        }
+
+        return { negara, provinsi, kecamatan };
+    }
+
+    function setHasil(negara, provinsi, kecamatan, lon, lat) {
+        document.getElementById("negara").textContent = negara || "-";
+        document.getElementById("provinsi").textContent = provinsi || "-";
+        document.getElementById("kecamatan").textContent = kecamatan || "-";
+        document.getElementById("longitude").textContent = typeof lon === "number" ? lon.toFixed(6) : (lon || "-");
+        document.getElementById("latitude").textContent = typeof lat === "number" ? lat.toFixed(6) : (lat || "-");
+    }
+</script>
+
 <body>
 
     <div class="card">
